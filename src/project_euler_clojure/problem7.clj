@@ -14,3 +14,8 @@
   (and
     (> n 1)
     (= (divisors n) (list 1 n))))
+
+(defn nth-prime [n]
+  (last (take n (filter is-prime? (range)))))
+
+(nth-prime 10001)
