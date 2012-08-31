@@ -26,18 +26,46 @@
 ;(count data)
 ;(count (data 0))
 
-(defn get-row [data x]
-  (seq (data x)))
+(defn get-row [data y]
+  (seq (data y)))
 
 (defn get-column [data x]
   (seq
     (for [y (range 20)]
       ((data y) x))))
 
-(defn get-diagonal-line [data x y]
+(defn get-down-right-diagonal-line [data x y]
   (seq
     (map #((data (last %)) (first %))
       (let [xs (range x 20)
             ys (range y 20)]
         (partition 2 (interleave xs ys))))))
 
+(defn get-down-left-diagonal-line [data x y]
+  (seq
+    (map #((data (last %)) (first %))
+      (let [xs (range x -1 -1)
+            ys (range y 20)]
+        (partition 2 (interleave xs ys))))))
+
+(defn find-max-products-of-four [data]
+  ; Prevent errors if a diagonal line is too small.
+  (if (> (count data) 3)
+    (reduce max
+      (map (partial reduce *) (partition 4 1 data)))
+    0))
+
+(apply max
+       (concat
+         (for [x (range 20)]
+           (find-max-products-of-four (get-column data x)))
+         (for [y (range 20)]
+           (find-max-products-of-four (get-row data y)))
+         (for [x (range 20)]
+           (find-max-products-of-four (get-down-left-diagonal-line data 0 x)))
+         (for [y (range 20)]
+           (find-max-products-of-four (get-down-left-diagonal-line data y 0)))
+         (for [x (range 20)]
+           (find-max-products-of-four (get-down-right-diagonal-line data 0 x)))
+         (for [y (range 20)]
+           (find-max-products-of-four (get-down-right-diagonal-line data y 0)))))
